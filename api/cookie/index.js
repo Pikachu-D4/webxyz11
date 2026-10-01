@@ -17,7 +17,8 @@ function testYtDlpWithCookies(cookiePath, testUrl) {
       '--dump-json',
       '--no-playlist',
       '--no-warnings',
-      '--extractor-args', 'youtube:player_client=ios,android,web',
+      '--js-runtimes', 'node',
+      '--extractor-args', 'youtube:player_client=android,mweb',
       '--cookies', cookiePath,
       testUrl,
     ];

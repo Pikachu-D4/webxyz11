@@ -746,12 +746,58 @@
   }
 
   /* ═══════════════════════════════════════════════════════════
+     DEVICE DETECTION
+     ═══════════════════════════════════════════════════════════ */
+  let currentDevice = 'pc';
+
+  function detectDevice() {
+    const ua = navigator.userAgent || '';
+    let label = 'PC (Desktop) • 1080p & 4K Ready';
+    let icon = '💻';
+    currentDevice = 'pc';
+
+    if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
+      currentDevice = 'ios';
+      label = 'Apple iOS • QuickTime MP4 Ready';
+      icon = '🍎';
+    } else if (/Android/.test(ua)) {
+      currentDevice = 'android';
+      label = 'Android Device • Fast Mobile Ready';
+      icon = '📱';
+    } else if (/Macintosh|Mac OS X/.test(ua)) {
+      currentDevice = 'mac';
+      label = 'Apple Mac • 1080p & 4K Ready';
+      icon = '🖥️';
+    } else if (/Windows/.test(ua)) {
+      currentDevice = 'pc';
+      label = 'Windows PC • 1080p & 4K Ready';
+      icon = '💻';
+    } else if (/Linux/.test(ua)) {
+      currentDevice = 'linux';
+      label = 'Linux PC • 1080p & 4K Ready';
+      icon = '🐧';
+    }
+
+    const pill = document.getElementById('devicePill');
+    const iconEl = document.getElementById('deviceIcon');
+    const labelEl = document.getElementById('deviceLabel');
+
+    if (pill && labelEl && iconEl) {
+      iconEl.textContent = icon;
+      labelEl.textContent = label;
+    }
+
+    return currentDevice;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
      EVENT LISTENERS
      ═══════════════════════════════════════════════════════════ */
 
   function init() {
     initTheme();
     updateHistoryBadge();
+    detectDevice();
 
     els.urlInput.addEventListener('input', onUrlInput);
     els.urlInput.addEventListener('keydown', onUrlKeyDown);
