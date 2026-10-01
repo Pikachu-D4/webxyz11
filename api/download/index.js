@@ -28,10 +28,14 @@ module.exports = withMiddleware(async (req, res) => {
   const title = (body.title || '').trim();
 
   const provider = getMediaProvider();
-  const result = await provider.createDownloadJob(url, formatId, title);
-
-  return sendJSON(res, 200, {
-    success: true,
-    jobId: result.jobId,
-  });
+  try {
+    const result = await provider.createDownloadJob(url, formatId, title);
+    return sendJSON(res, 200, {
+      success: true,
+      jobId: result.jobId,
+    });
+  } catch (err) {
+    console.error('[Download Error]', err);
+    return sendError(res, 500, err.message || 'Failed to start download job.');
+  }
 });

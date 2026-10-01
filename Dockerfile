@@ -21,6 +21,13 @@ RUN npm install --omit=dev
 # Copy app code
 COPY . .
 
+# Ensure bin and downloads directories exist with links to system binaries
+RUN mkdir -p /app/bin /app/downloads \
+    && ln -sf /usr/local/bin/yt-dlp /app/bin/yt-dlp \
+    && ln -sf /usr/bin/ffmpeg /app/bin/ffmpeg \
+    && ln -sf /usr/bin/ffprobe /app/bin/ffprobe \
+    && chmod -R 777 /app/downloads
+
 # Set production environment
 ENV NODE_ENV=production
 ENV PORT=3000

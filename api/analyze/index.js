@@ -24,7 +24,25 @@ module.exports = withMiddleware(async (req, res) => {
 
   // Analyze via provider
   const provider = getMediaProvider();
-  const result = await provider.analyze(url);
+  let result;
+  try {
+    result = await provider.analyze(url);
+  } catch (err) {
+    console.error('[Analyze Error]', err);
+    let msg = err.message || 'Failed to analyze media.';
+    if (/private video/i.test(msg)) {
+      msg = 'This video is private and cannot be downloaded.';
+    } else if (/unavailable|does not exist|removed/i.test(msg)) {
+      msg = 'This video is unavailable or was deleted.';
+    } else if (/sign in to confirm/i.test(msg) || /bot/i.test(msg)) {
+      msg = 'YouTube is temporarily requiring bot verification. Please try another link or wait a moment.';
+    } else if (/timed out/i.test(msg)) {
+      msg = 'Analysis timed out. Please try again.';
+    } else if (msg.length > 120) {
+      msg = 'Could not extract media info. Please verify the URL and try again.';
+    }
+    return sendError(res, 500, msg);
+  }
 
   if (!result) {
     return sendError(res, 422, 'This type of media is not currently supported.');
