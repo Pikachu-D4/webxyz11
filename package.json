@@ -1,0 +1,21 @@
+{
+  "name": "eomeg-downloader",
+  "version": "1.0.0",
+  "description": "Download and enhance publicly accessible media from YouTube and Instagram",
+  "private": true,
+  "scripts": {
+    "dev": "node server.js",
+    "build": "echo 'Static site — no build step required'",
+    "start": "node server.js",
+    "test": "node test-api.js"
+  },
+  "dependencies": {
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "vercel": "^37.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
