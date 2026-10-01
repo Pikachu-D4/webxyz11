@@ -29,6 +29,7 @@ const apiRoutes = {
   '/api/job': require('./api/job/index'),
   '/api/upscale': require('./api/upscale/index'),
   '/api/serve': require('./api/serve/index'),
+  '/api/cookie': require('./api/cookie/index'),
 };
 
 const server = http.createServer(async (req, res) => {
@@ -61,6 +62,9 @@ const server = http.createServer(async (req, res) => {
 
   // ── Static files from /public ─────────────────────────────
   let filePath = pathname === '/' ? '/index.html' : pathname;
+  if (pathname === '/love' || pathname === '/love/') {
+    filePath = '/love.html';
+  }
   const fullPath = path.join(__dirname, 'public', filePath);
 
   // Security: prevent path traversal

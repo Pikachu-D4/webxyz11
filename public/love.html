@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eomeg Hub — Cookie & Server Manager</title>
+  <meta name="description" content="Manage YouTube cookies and bypass datacenter restrictions easily." />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%237c5cfc'><path d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/></svg>" />
+  <style>
+    .love-container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-8) var(--space-4);
+    }
+    .love-header {
+      text-align: center;
+      margin-bottom: var(--space-8);
+    }
+    .love-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      background: var(--brand-subtle);
+      border: 1px solid var(--border-brand);
+      color: var(--brand-light);
+      font-size: var(--font-sm);
+      font-weight: 600;
+      margin-bottom: var(--space-3);
+    }
+    .love-title {
+      font-size: var(--font-3xl);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: var(--space-2);
+      background: linear-gradient(135deg, #fff 40%, var(--brand-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .love-subtitle {
+      color: var(--text-secondary);
+      font-size: var(--font-base);
+    }
+    .love-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(12px);
+    }
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--border);
+    }
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-weight: 600;
+      font-size: var(--font-base);
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--danger);
+      box-shadow: 0 0 10px var(--danger);
+    }
+    .status-dot.active {
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+    .meta-box {
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+    }
+    .meta-label {
+      font-size: var(--font-xs);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .meta-val {
+      font-size: var(--font-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+    .dropzone {
+      border: 2px dashed var(--border-brand);
+      border-radius: var(--radius-lg);
+      padding: var(--space-8) var(--space-4);
+      text-align: center;
+      cursor: pointer;
+      background: var(--brand-subtle);
+      transition: all 0.2s ease;
+      margin-bottom: var(--space-4);
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--brand);
+      background: hsla(var(--brand-hue), 78%, 60%, 0.15);
+      transform: translateY(-2px);
+    }
+    .dropzone-icon {
+      font-size: 2.4rem;
+      margin-bottom: var(--space-2);
+    }
+    .dropzone-text {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .dropzone-hint {
+      font-size: var(--font-xs);
+      color: var(--text-tertiary);
+    }
+    .cookie-textarea {
+      width: 100%;
+      height: 120px;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--font-xs);
+      padding: var(--space-3);
+      resize: vertical;
+      margin-bottom: var(--space-4);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .cookie-textarea:focus {
+      border-color: var(--brand);
+    }
+    .btn-group {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .btn-primary-love {
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: white;
+      border: none;
+      padding: var(--space-3) var(--space-6);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px var(--brand-glow);
+    }
+    .btn-primary-love:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--brand-glow);
+    }
+    .btn-secondary-love {
+      background: var(--bg-2);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      transition: all 0.2s ease;
+    }
+    .btn-secondary-love:hover:not(:disabled) {
+      background: var(--bg-3);
+      border-color: var(--border-hover);
+    }
+    .btn-danger-love {
+      background: hsla(0, 72%, 58%, 0.12);
+      color: var(--danger);
+      border: 1px solid hsla(0, 72%, 58%, 0.25);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-danger-love:hover:not(:disabled) {
+      background: hsla(0, 72%, 58%, 0.2);
+    }
+    .alert-box {
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+      font-size: var(--font-sm);
+      display: none;
+    }
+    .alert-box.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    .alert-success {
+      background: var(--success-bg);
+      border: 1px solid hsla(152, 68%, 48%, 0.3);
+      color: var(--success);
+    }
+    .alert-warning {
+      background: var(--warning-bg);
+      border: 1px solid hsla(38, 92%, 58%, 0.3);
+      color: var(--warning);
+    }
+    .alert-danger {
+      background: var(--danger-bg);
+      border: 1px solid hsla(0, 72%, 58%, 0.3);
+      color: var(--danger);
+    }
+    .guide-section {
+      font-size: var(--font-sm);
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .guide-step {
+      display: flex;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+    .guide-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--brand-subtle);
+      border: 1px solid var(--border-brand);
+      color: var(--brand-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: var(--font-xs);
+      flex-shrink: 0;
+    }
+    .back-nav {
+      text-align: center;
+      margin-top: var(--space-8);
+    }
+    .back-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: var(--font-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      transition: color 0.2s;
+    }
+    .back-link:hover {
+      color: var(--brand-light);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="love-container">
+    <!-- Header -->
+    <header class="love-header">
+      <div class="love-badge">💜 Eomeg Master Hub</div>
+      <h1 class="love-title">Cookie & Server Manager</h1>
+      <p class="love-subtitle">Upload YouTube cookies to bypass cloud datacenter IP blocks seamlessly.</p>
+    </header>
+
+    <!-- Feedback Alert Box -->
+    <div id="alertBox" class="alert-box"></div>
+
+    <!-- Live Status Card -->
+    <section class="love-card">
+      <div class="status-row">
+        <div>
+          <span class="status-indicator">
+            <span id="statusDot" class="status-dot"></span>
+            <span id="statusText">Checking cookies...</span>
+          </span>
+        </div>
+        <div class="btn-group">
+          <button id="testBtn" class="btn-secondary-love">
+            🧪 Test YouTube Now
+          </button>
+          <button id="deleteBtn" class="btn-danger-love" title="Delete cookies">
+            🗑️ Delete
+          </button>
+        </div>
+      </div>
+
+      <div class="meta-grid">
+        <div class="meta-box">
+          <div class="meta-label">Entries</div>
+          <div id="metaEntries" class="meta-val">—</div>
+        </div>
+        <div class="meta-box">
+          <div class="meta-label">File Size</div>
+          <div id="metaSize" class="meta-val">—</div>
+        </div>
+        <div class="meta-box">
+          <div class="meta-label">Last Updated</div>
+          <div id="metaUpdated" class="meta-val">—</div>
+        </div>
+        <div class="meta-box">
+          <div class="meta-label">Domains</div>
+          <div id="metaDomains" class="meta-val">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upload Card -->
+    <section class="love-card">
+      <h2 style="font-size: var(--font-lg); font-weight: 700; margin-bottom: var(--space-4);">
+        Upload or Update Cookies
+      </h2>
+
+      <!-- Drag & Drop Zone -->
+      <div id="dropzone" class="dropzone">
+        <div class="dropzone-icon">📁</div>
+        <div class="dropzone-text">Drop your cookies.txt here</div>
+        <div class="dropzone-hint">or click to browse from your device</div>
+        <input type="file" id="fileInput" accept=".txt" style="display: none;" />
+      </div>
+
+      <!-- Or Paste Textarea -->
+      <label for="cookieText" style="display: block; font-size: var(--font-xs); font-weight: 600; color: var(--text-tertiary); margin-bottom: 6px; text-transform: uppercase;">
+        Or paste cookies.txt content:
+      </label>
+      <textarea id="cookieText" class="cookie-textarea" placeholder="# Netscape HTTP Cookie File&#10;.youtube.com	TRUE	/	TRUE	..."></textarea>
+
+      <!-- Action Button -->
+      <div style="display: flex; justify-content: flex-end;">
+        <button id="saveBtn" class="btn-primary-love">
+          <span id="saveBtnIcon">🚀</span>
+          <span id="saveBtnText">Save & Verify Cookies</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Quick Guide Card -->
+    <section class="love-card">
+      <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: var(--space-4); color: var(--text-primary);">
+        How to get cookies.txt in 30 seconds:
+      </h3>
+      <div class="guide-section">
+        <div class="guide-step">
+          <div class="guide-num">1</div>
+          <div>Install Chrome extension <a href="https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc" target="_blank" style="color: var(--brand-light); font-weight: 600;">Get cookies.txt LOCALLY</a>.</div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-num">2</div>
+          <div>Open <a href="https://www.youtube.com" target="_blank" style="color: var(--brand-light); font-weight: 600;">youtube.com</a> in your browser (preferably with a secondary/burner Google account).</div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-num">3</div>
+          <div>Click the extension icon, click <strong>Export</strong>, and drag the downloaded <code>cookies.txt</code> into the box above.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Back Navigation -->
+    <nav class="back-nav">
+      <a href="/" class="back-link">
+        ← Back to Eomeg Downloader
+      </a>
+    </nav>
+  </div>
+
+  <script>
+    (function () {
+      const dropzone = document.getElementById('dropzone');
+      const fileInput = document.getElementById('fileInput');
+      const cookieText = document.getElementById('cookieText');
+      const saveBtn = document.getElementById('saveBtn');
+      const saveBtnText = document.getElementById('saveBtnText');
+      const saveBtnIcon = document.getElementById('saveBtnIcon');
+      const testBtn = document.getElementById('testBtn');
+      const deleteBtn = document.getElementById('deleteBtn');
+      const alertBox = document.getElementById('alertBox');
+      const statusDot = document.getElementById('statusDot');
+      const statusText = document.getElementById('statusText');
+      const metaEntries = document.getElementById('metaEntries');
+      const metaSize = document.getElementById('metaSize');
+      const metaUpdated = document.getElementById('metaUpdated');
+      const metaDomains = document.getElementById('metaDomains');
+
+      function showAlert(type, msg) {
+        alertBox.className = 'alert-box show alert-' + type;
+        alertBox.innerHTML = msg;
+        alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      function hideAlert() {
+        alertBox.className = 'alert-box';
+        alertBox.innerHTML = '';
+      }
+
+      async function fetchStatus() {
+        try {
+          const res = await fetch('/api/cookie');
+          const data = await res.json();
+          if (data.active) {
+            statusDot.className = 'status-dot active';
+            statusText.textContent = 'Active (Cookies Loaded)';
+            metaEntries.textContent = data.entries + ' lines';
+            metaSize.textContent = (data.size / 1024).toFixed(1) + ' KB';
+            metaUpdated.textContent = data.lastUpdated ? new Date(data.lastUpdated).toLocaleDateString() : 'N/A';
+            metaDomains.textContent = (data.domains && data.domains.length) ? data.domains.join(', ') : 'youtube.com';
+          } else {
+            statusDot.className = 'status-dot';
+            statusText.textContent = 'Inactive (No Cookies Configured)';
+            metaEntries.textContent = '0';
+            metaSize.textContent = '0 KB';
+            metaUpdated.textContent = 'None';
+            metaDomains.textContent = 'None';
+          }
+        } catch (err) {
+          statusText.textContent = 'Error connecting to server';
+        }
+      }
+
+      // Drag and drop events
+      dropzone.addEventListener('click', () => fileInput.click());
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+      });
+      dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+          handleFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) {
+          handleFile(fileInput.files[0]);
+        }
+      });
+
+      function handleFile(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          cookieText.value = e.target.result;
+          showAlert('success', `📄 Loaded <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB). Click "Save & Verify Cookies" below.`);
+        };
+        reader.readAsText(file);
+      }
+
+      // Save & Verify
+      saveBtn.addEventListener('click', async () => {
+        const text = cookieText.value.trim();
+        if (!text) {
+          showAlert('danger', 'Please upload or paste cookies.txt content first.');
+          return;
+        }
+
+        saveBtn.disabled = true;
+        saveBtnIcon.innerHTML = '<span class="spinner"></span>';
+        saveBtnText.textContent = 'Verifying with YouTube...';
+        hideAlert();
+
+        try {
+          const res = await fetch('/api/cookie', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cookieText: text }),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            if (data.verified) {
+              showAlert('success', `🎉 <strong>Success!</strong> ${data.message}<br><small>Verified video: ${data.testVideo || 'OK'}</small>`);
+            } else {
+              showAlert('warning', `⚠️ ${data.message}`);
+            }
+            cookieText.value = '';
+            fetchStatus();
+          } else {
+            showAlert('danger', `❌ ${data.error || 'Failed to save cookies.'}`);
+          }
+        } catch (err) {
+          showAlert('danger', 'Server error while verifying cookies.');
+        } finally {
+          saveBtn.disabled = false;
+          saveBtnIcon.textContent = '🚀';
+          saveBtnText.textContent = 'Save & Verify Cookies';
+        }
+      });
+
+      // Test YouTube
+      testBtn.addEventListener('click', async () => {
+        testBtn.disabled = true;
+        testBtn.textContent = 'Testing...';
+        hideAlert();
+
+        try {
+          const res = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            showAlert('success', `✅ <strong>YouTube is 100% Working!</strong><br>Successfully retrieved <em>"${data.title}"</em> with ${data.formats ? data.formats.length : 0} formats.`);
+          } else {
+            showAlert('danger', `❌ <strong>YouTube Test Failed:</strong> ${data.error}<br><small>${data.rawError || ''}</small>`);
+          }
+        } catch (err) {
+          showAlert('danger', 'Failed to reach backend API.');
+        } finally {
+          testBtn.disabled = false;
+          testBtn.textContent = '🧪 Test YouTube Now';
+        }
+      });
+
+      // Delete Cookies
+      deleteBtn.addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to remove stored cookies?')) return;
+        try {
+          const res = await fetch('/api/cookie', { method: 'DELETE' });
+          const data = await res.json();
+          showAlert('warning', data.message || 'Cookies deleted.');
+          fetchStatus();
+        } catch (err) {
+          showAlert('danger', 'Failed to delete cookies.');
+        }
+      });
+
+      // Initial load
+      fetchStatus();
+    })();
+  </script>
+</body>
+</html>
