@@ -14,6 +14,7 @@ function testYtDlpWithCookies(cookiePath, testUrl) {
   return new Promise((resolve) => {
     const ytdlpBin = findBinary('yt-dlp');
     const args = [
+      '--force-ipv4',
       '--dump-json',
       '--no-playlist',
       '--no-warnings',
