@@ -29,19 +29,32 @@ module.exports = withMiddleware(async (req, res) => {
     result = await provider.analyze(url);
   } catch (err) {
     console.error('[Analyze Error]', err);
-    let msg = err.message || 'Failed to analyze media.';
-    if (/private video/i.test(msg)) {
+    let raw = (err.message || 'Failed to analyze media.').trim();
+    let msg = raw;
+
+    if (/private video/i.test(raw)) {
       msg = 'This video is private and cannot be downloaded.';
-    } else if (/unavailable|does not exist|removed/i.test(msg)) {
+    } else if (/unavailable|does not exist|removed/i.test(raw)) {
       msg = 'This video is unavailable or was deleted.';
-    } else if (/sign in to confirm/i.test(msg) || /bot/i.test(msg)) {
-      msg = 'YouTube is temporarily requiring bot verification. Please try another link or wait a moment.';
-    } else if (/timed out/i.test(msg)) {
+    } else if (/sign in to confirm/i.test(raw) || /bot/i.test(raw)) {
+      msg = 'YouTube requires verification (bot check). Please try again in a few moments.';
+    } else if (/empty media response/i.test(raw) || /not granting access/i.test(raw)) {
+      msg = 'Instagram blocked unauthenticated access (login required).';
+    } else if (/timed out/i.test(raw)) {
       msg = 'Analysis timed out. Please try again.';
-    } else if (msg.length > 120) {
-      msg = 'Could not extract media info. Please verify the URL and try again.';
+    } else {
+      const cleanLine = raw
+        .split('\n')
+        .map((l) => l.trim())
+        .find((l) => l.startsWith('ERROR:') || l.length > 0) || raw;
+      msg = cleanLine.replace(/^ERROR:\s*(\[[^\]]+\]\s*)?/i, '').trim();
     }
-    return sendError(res, 500, msg);
+
+    return sendJSON(res, 500, {
+      success: false,
+      error: msg,
+      rawError: raw,
+    });
   }
 
   if (!result) {
