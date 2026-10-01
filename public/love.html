@@ -481,13 +481,27 @@
         reader.readAsText(file);
       }
 
+      function sanitizeCookies(raw) {
+        return (raw || '').split('\n').filter(line => {
+          if (!line.trim() || line.startsWith('#')) return true;
+          const parts = line.split('\t');
+          const name = parts[5];
+          if (name && (name.includes('SAPISID') || name.includes('PAPISID'))) {
+            return false;
+          }
+          return true;
+        }).join('\n');
+      }
+
       // Save & Verify
       saveBtn.addEventListener('click', async () => {
-        const text = cookieText.value.trim();
+        let text = cookieText.value.trim();
         if (!text) {
           showAlert('danger', 'Please upload or paste cookies.txt content first.');
           return;
         }
+
+        text = sanitizeCookies(text);
 
         saveBtn.disabled = true;
         saveBtnIcon.innerHTML = '<span class="spinner"></span>';

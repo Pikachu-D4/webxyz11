@@ -30,8 +30,8 @@ function testYtDlpWithCookies(cookiePath, testUrl) {
 
     const timer = setTimeout(() => {
       try { proc.kill(); } catch (_) {}
-      resolve({ success: false, error: 'Verification timed out after 15s.' });
-    }, 15000);
+      resolve({ success: false, error: 'Verification timed out after 30s.' });
+    }, 30000);
 
     proc.on('close', (code) => {
       clearTimeout(timer);
